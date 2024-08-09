@@ -3,12 +3,14 @@ const { constants } = require("../constants");
 const errorHandler = (err, req, res, next) => {
     const statusCode = res.statusCode ? res.statusCode : 500;
 
+    res.status(statusCode);
+
     switch (statusCode) {
         case constants.VALIDATION_ERROR:
             res.json({
                 title: "Validation Failed",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
 
@@ -16,7 +18,7 @@ const errorHandler = (err, req, res, next) => {
             res.json({
                 title: "Resource Not Found",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
 
@@ -24,7 +26,7 @@ const errorHandler = (err, req, res, next) => {
             res.json({
                 title: "Unauthorized",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
 
@@ -32,7 +34,7 @@ const errorHandler = (err, req, res, next) => {
             res.json({
                 title: "Forbidden",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
 
@@ -40,25 +42,18 @@ const errorHandler = (err, req, res, next) => {
             res.json({
                 title: "Server Error",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
 
         default:
-            res.status(statusCode).json({
+            res.status(500).json({
                 title: "An error occurred",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
     }
 };
 
 module.exports = errorHandler;
-app.use((err, req, res, next) => {
-    const statusCode = res.statusCode ? res.statusCode : 500;
-    res.status(statusCode).json({
-        message: err.message,
-        stack: process.env.NODE_ENV === "production" ? null : err.stack,
-    });
-});
