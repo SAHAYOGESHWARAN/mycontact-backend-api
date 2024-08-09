@@ -9,11 +9,9 @@ const{getContacts,
 
 
 // GET request to retrieve all contacts
-router.route("/").get(getContacts);
-router.route("/").post(createContact);
-router.route("/:id").get( getContactById);
-router.route("/:id").put(updateContact);
-router.route("/:id").delete(deleteContact);
+router.route("/").get(getContacts).post(createContact);
+
+router.route("/:id").get( getContactById).put(updateContact).delete(deleteContact);
 
 
 module.exports = router;
