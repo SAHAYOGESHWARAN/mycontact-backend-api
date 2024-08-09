@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/contactModel");
+const mongoose = require("mongoose");
 
 // @desc Get all contacts
 // @route GET /api/contacts
@@ -76,21 +77,16 @@ const deleteContact = asyncHandler(async (req, res) => {
         throw new Error("Invalid ID format");
     }
 
-    const contact = await Contact.findById(id);
+    const contact = await Contact.findByIdAndDelete(id);
 
     if (!contact) {
         res.status(404);
         throw new Error("Contact not found");
     }
 
-    // Use deleteOne() or findByIdAndDelete() instead of remove()
-    await Contact.deleteOne({ _id: id });
-
     console.log(`DELETE request to delete contact with ID ${id}`);
     res.status(200).json({ message: `Contact with ID ${id} deleted` });
 });
-
-module.exports = deleteContact;
 
 // Export all functions
 module.exports = {
@@ -100,4 +96,3 @@ module.exports = {
     updateContact,
     deleteContact,
 };
-
