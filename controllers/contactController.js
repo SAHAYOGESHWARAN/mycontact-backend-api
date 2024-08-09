@@ -70,6 +70,12 @@ const updateContact = asyncHandler(async (req, res) => {
 const deleteContact = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
+    // Validate the id
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(400);
+        throw new Error("Invalid ID format");
+    }
+
     const contact = await Contact.findById(id);
 
     if (!contact) {
@@ -77,11 +83,14 @@ const deleteContact = asyncHandler(async (req, res) => {
         throw new Error("Contact not found");
     }
 
-    await contact.remove();
+    // Use deleteOne() or findByIdAndDelete() instead of remove()
+    await Contact.deleteOne({ _id: id });
 
     console.log(`DELETE request to delete contact with ID ${id}`);
     res.status(200).json({ message: `Contact with ID ${id} deleted` });
 });
+
+module.exports = deleteContact;
 
 // Export all functions
 module.exports = {
