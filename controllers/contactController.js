@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 // @route GET /api/contacts
 // @access private
 const getContacts = asyncHandler(async (req, res) => {
-    const contacts = await Contact.find();
+    const contacts = await Contact.find({user_id : req.user.id});
     console.log("GET request to get all contacts");
     res.status(200).json(contacts);
 });
@@ -15,13 +15,16 @@ const getContacts = asyncHandler(async (req, res) => {
 // @route POST /api/contacts
 // @access private
 const createContact = asyncHandler(async (req, res) => {
-    console.log("the request body is:", req.body);
+    console.log("The request body is:", req.body);
     const { name, email, phone } = req.body;
+    
     if (!name || !email || !phone) {
         res.status(400);
         throw new Error("All fields are mandatory!");
     }
+    
     const contact = await Contact.create({ name, email, phone });
+    console.log("Contact created:", contact);
     res.status(201).json(contact);
 });
 
@@ -30,6 +33,13 @@ const createContact = asyncHandler(async (req, res) => {
 // @access private
 const getContactById = asyncHandler(async (req, res) => {
     const { id } = req.params;
+
+    // Validate the ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(400);
+        throw new Error("Invalid ID format");
+    }
+
     const contact = await Contact.findById(id);
 
     if (!contact) {
@@ -47,6 +57,12 @@ const getContactById = asyncHandler(async (req, res) => {
 const updateContact = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { name, email, phone } = req.body;
+
+    // Validate the ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(400);
+        throw new Error("Invalid ID format");
+    }
 
     const contact = await Contact.findById(id);
 
@@ -71,7 +87,7 @@ const updateContact = asyncHandler(async (req, res) => {
 const deleteContact = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    // Validate the id
+    // Validate the ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
         res.status(400);
         throw new Error("Invalid ID format");
