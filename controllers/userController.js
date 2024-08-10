@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModle"); 
+const User = require("../models/userModle");
+require('dotenv').config();
 
 // @desc Register a user
 // @route POST /api/register
@@ -32,7 +33,6 @@ const registerUser = asyncHandler(async (req, res) => {
         password: hashedPassword,
     });
 
-   
     console.log(`User created: ${user}`);
 
     // Check if the user was created successfully
@@ -53,27 +53,34 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access public
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    if(!email || !password){
+
+    if (!email || !password) {
         return res.status(400).json({ message: "Please fill in all fields" });
     }
-    const user = await User.findOne({ email });
-    //compare password with hashedpassword
-    if (!user && (await burypt.compare(password,user.password))){
-        const accessToken = jwt.sign({
-            user:{
-                id: user._id,
-                name: user.name,
-                email: user.email
-            },
-        },process.env.ACCESS_TOKEN_SECERT,
-        {expiresIn:"2m"}
-    );
-        return res.status(400).json({ message: "Invalid credentials" });
-    }else{
-        res.status(401)
-        throw new Error("email or password is not valid");
-    }
+
+    const user = await User.findOne({ email: email });
     
+    // Check if user exists
+    if (user && await bcrypt.compare(password, user.password)) {
+        // Generate JWT token
+        const accessToken = jwt.sign(
+            {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+            },
+            process.env.ACCESS_TOKEN_SECRET, // Corrected variable name
+            { expiresIn: "2h" }
+        );
+
+        res.json({
+            accessToken
+        });
+    } else {
+        res.status(401).json({ message: "Invalid credentials" });
+    }
 });
 
 // @desc Current user info
