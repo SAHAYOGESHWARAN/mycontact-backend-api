@@ -54,11 +54,16 @@ const errorHandler = (err, req, res, next) => {
     }
 };
 
+// function errorHandler(err, req, res, next) {
+//     // Set status code to the response's status code if it exists, otherwise default to 500
+//     const statusCode = res.statusCode ? res.statusCode : 500;
+
+//     // Send a JSON response with the error message and stack trace (if not in production)
+//     res.status(statusCode).json({
+//         message: err.message,
+//         stack: process.env.NODE_ENV === "production" ? null : err.stack,
+//     });
+// }
+
 module.exports = errorHandler;
-app.use((err, req, res, next) => {
-    const statusCode = res.statusCode ? res.statusCode : 500;
-    res.status(statusCode).json({
-        message: err.message,
-        stack: process.env.NODE_ENV === "production" ? null : err.stack,
-    });
-});
+
