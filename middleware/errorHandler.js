@@ -45,26 +45,13 @@ const errorHandler = (err, req, res, next) => {
             break;
 
         default:
-            res.status(statusCode).json({
+            res.json({
                 title: "An error occurred",
                 message: err.message,
-                stackTrace: err.stack,
+                stackTrace: process.env.NODE_ENV === "production" ? null : err.stack,
             });
             break;
     }
 };
 
-function errorHandler(err, req, res, next) {
-    const statusCode = res.statusCode ? res.statusCode : 500;
-
-    res.status(statusCode).json({
-        message: err.message,
-        stack: process.env.NODE_ENV === "production" ? null : err.stack,
-    });
-}
-
 module.exports = errorHandler;
-
-
-
-

@@ -1,6 +1,6 @@
 const express = require("express");
 const connectDb = require("./config/dbConnection");
-const errorHandler = require("./middleware/errorHandler");
+const errorHandler = require("./middleware/errorhandler");
 const dotenv = require("dotenv").config();
 
 // Connect to the database
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 
-// Use the error handler middleware after all routes
+// Error handling middleware should be defined after all other routes
 app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
