@@ -1,39 +1,52 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
-const User = require("../models/userModule");
+const User = require("../models/userModle"); 
+
 // @desc Register a user
-// @route POST /api/contacts
+// @route POST /api/register
 // @access public
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
-    if(!name || !email || !password){
-        res.status(400).json({ message: "Please fill in all fields" });
-    }
-    const userAvailable = await User.findOne({email: email})
-    if(userAvailable){
-        res.status(400).json({ message: "Email already in use" });
+
+    // Check if all fields are provided
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "Please fill in all fields" });
     }
 
-    //hash password 
-    const hashedPassword = await bcrypt.hash(password,10);
-    console.log("hashed Password:", hashedPassword);
-    res.json({message:"Register the user"});
-    
+    // Check if the user already exists
+    const userAvailable = await User.findOne({ email });
+
+    if (userAvailable) {
+        return res.status(400).json({ message: "Email already in use" });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(`Hashed Password: ${hashedPassword}`);
+
+    // Create a new user
+    const user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+    });
+
+    console.log(`User created: ${user}`);
+    res.status(201).json({ message: "User registered successfully", user });
 });
 
-// @desc login a user
-// @route POST /api/contacts
+// @desc Login a user
+// @route POST /api/login
 // @access public
 const loginUser = asyncHandler(async (req, res) => {
     res.json({ message: "Login user" });
 });
 
-
-// @desc  Current user info
+// @desc Current user info
 // @route POST /api/current
 // @access private
 const currentUser = asyncHandler(async (req, res) => {
     res.json({ message: "Current user information" });
 });
 
-module.exports = {registerUser,loginUser,currentUser};
+module.exports = { registerUser, loginUser, currentUser };
