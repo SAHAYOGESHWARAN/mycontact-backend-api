@@ -65,7 +65,9 @@ const loginUser = asyncHandler(async (req, res) => {
                 name: user.name,
                 email: user.email
             },
-        },process.env.ACCESS_TOKEN_SECERT)
+        },process.env.ACCESS_TOKEN_SECERT,
+        {expiresIn:"2m"}
+    );
         return res.status(400).json({ message: "Invalid credentials" });
     }
     res.json({ message: "Login user" });
