@@ -69,6 +69,8 @@ const loginUser = asyncHandler(async (req, res) => {
         {expiresIn:"2m"}
     );
         return res.status(400).json({ message: "Invalid credentials" });
+    }else{
+        res.status(401)
     }
     res.json({ message: "Login user" });
 });
