@@ -1,7 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { getContacts, createContact } = require("../controllers/contactController");
 
-router.route("/").get(getContacts).post(createContact);
+router.post("/register", (req, res) => {
+    res.json({ message: "Register the user" });
+});
+
+router.post("/login", (req, res) => {
+    res.json({ message: "Login user" });
+});
+
+router.post("/current", (req, res) => {
+    res.json({ message: "Current user information" });
+});
 
 module.exports = router;
