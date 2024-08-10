@@ -60,7 +60,11 @@ const loginUser = asyncHandler(async (req, res) => {
     //compare password with hashedpassword
     if (!user && (await burypt.compare(password,user.password))){
         const accessToken = jwt.sign({
-            
+            user:{
+                id: user._id,
+                name: user.name,
+                email: user.email
+            },
         })
         return res.status(400).json({ message: "Invalid credentials" });
     }
