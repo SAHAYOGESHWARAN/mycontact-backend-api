@@ -12,9 +12,12 @@ const validateToken = asyncHandler(async(req,res,next) => {
                 res.status(401).json({ message: "Invalid token" });
         }
        req.User =decoded.user;
-
+       next();
         });
-
+      if (!token){
+        res.status(401);
+        throw new Error ("User is not authorized or token is missing")
+      }
     }
 });
 
