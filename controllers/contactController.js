@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 // @route GET /api/contacts
 // @access private
 const getContacts = asyncHandler(async (req, res) => {
-    const contacts = await Contact.find({user_id : req.user.id});
+    const contacts = await Contact.find({ user_id: req.user.id });
     console.log("GET request to get all contacts");
     res.status(200).json(contacts);
 });
@@ -17,19 +17,19 @@ const getContacts = asyncHandler(async (req, res) => {
 const createContact = asyncHandler(async (req, res) => {
     console.log("The request body is:", req.body);
     const { name, email, phone } = req.body;
-    
+
     if (!name || !email || !phone) {
         res.status(400);
         throw new Error("All fields are mandatory!");
     }
-    
+
     const contact = await Contact.create({
-         name, 
-         email, 
-         phone,
-         user_id : req.user.id
-        
-        });
+        name,
+        email,
+        phone,
+        user_id: req.user.id
+    });
+
     console.log("Contact created:", contact);
     res.status(201).json(contact);
 });
@@ -51,6 +51,12 @@ const getContactById = asyncHandler(async (req, res) => {
     if (!contact) {
         res.status(404);
         throw new Error("Contact not found");
+    }
+
+    // Ensure the contact belongs to the current user
+    if (contact.user_id.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Unauthorized access to this contact");
     }
 
     console.log(`GET request to get contact with ID ${id}`);
@@ -77,6 +83,13 @@ const updateContact = asyncHandler(async (req, res) => {
         throw new Error("Contact not found");
     }
 
+    // Ensure the contact belongs to the current user
+    if (contact.user_id.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Unauthorized access to this contact");
+    }
+
+    // Update contact details
     contact.name = name || contact.name;
     contact.email = email || contact.email;
     contact.phone = phone || contact.phone;
@@ -99,12 +112,20 @@ const deleteContact = asyncHandler(async (req, res) => {
         throw new Error("Invalid ID format");
     }
 
-    const contact = await Contact.findByIdAndDelete(id);
+    const contact = await Contact.findById(id);
 
     if (!contact) {
         res.status(404);
         throw new Error("Contact not found");
     }
+
+    // Ensure the contact belongs to the current user
+    if (contact.user_id.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("Unauthorized access to this contact");
+    }
+
+    await contact.remove();
 
     console.log(`DELETE request to delete contact with ID ${id}`);
     res.status(200).json({ message: `Contact with ID ${id} deleted` });
