@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // @desc Get all contacts
 // @route GET /api/contacts
-// @access public
+// @access private
 const getContacts = asyncHandler(async (req, res) => {
     const contacts = await Contact.find();
     console.log("GET request to get all contacts");
@@ -13,7 +13,7 @@ const getContacts = asyncHandler(async (req, res) => {
 
 // @desc Create a new contact
 // @route POST /api/contacts
-// @access public
+// @access private
 const createContact = asyncHandler(async (req, res) => {
     console.log("the request body is:", req.body);
     const { name, email, phone } = req.body;
@@ -27,7 +27,7 @@ const createContact = asyncHandler(async (req, res) => {
 
 // @desc Get a contact by ID
 // @route GET /api/contacts/:id
-// @access public
+// @access private
 const getContactById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const contact = await Contact.findById(id);
@@ -43,7 +43,7 @@ const getContactById = asyncHandler(async (req, res) => {
 
 // @desc Update a contact by ID
 // @route PUT /api/contacts/:id
-// @access public
+// @access private
 const updateContact = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { name, email, phone } = req.body;
@@ -67,7 +67,7 @@ const updateContact = asyncHandler(async (req, res) => {
 
 // @desc Delete a contact by ID
 // @route DELETE /api/contacts/:id
-// @access public
+// @access private
 const deleteContact = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
